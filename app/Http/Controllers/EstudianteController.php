@@ -129,7 +129,7 @@ class EstudianteController extends Controller
         // Verificar si el estudiante existe y la contraseña es válida
         if ($estudiante && Hash::check($request['pin'], $estudiante->pin)) {
             Auth::guard('estudiante')->login($estudiante);
-            return redirect()->route('estudiantes.index'); // Redirigir a la lista de estudiantes
+            return redirect()->route('asistencias.index'); // Redirigir a la lista de estudiantes
         } else {
             // Mostrar mensaje de error si las credenciales no coinciden
             return redirect()->back()->withErrors([

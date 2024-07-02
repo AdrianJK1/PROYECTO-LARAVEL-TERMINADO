@@ -74,10 +74,7 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Estudiantes Grupos
                             </a>
-                            <a class="nav-link" href="{{ route('asistencias.index') }}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                                Asistencias
-                            </a>
+
                             @elseif (auth()->guard('estudiante')->check())
                             <div class="sb-sidenav-menu-heading">Sección Estudiantes</div>
                             <a class="nav-link" href="{{ route('asistencias.index') }}">

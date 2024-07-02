@@ -48,13 +48,7 @@
                     <td>{{ $asistencia->fecha }}</td>
                     <td>{{ $asistencia->hora_entrada }}</td>
                     <td>
-                        @if (auth()->guard('estudiante')->check())
-                            <a href="{{ route('asistencias.show', $asistencia->id) }}" class="btn btn-info">Ver</a>
-                        @elseif (auth()->guard('docente')->check())
-                            <a href="{{ route('asistencias.edit', $asistencia->id) }}" class="btn btn-warning">Editar</a>
-                            <a href="{{ route('asistencias.show', $asistencia->id) }}" class="btn btn-info">Ver</a>
-                            <a href="{{ route('asistencias.delete', $asistencia->id) }}" class="btn btn-danger">Eliminar</a>
-                        @endif
+                        <a href="{{ route('asistencias.show', $asistencia->id) }}" class="btn btn-info">Ver</a>
                     </td>
                 </tr>
             @endforeach

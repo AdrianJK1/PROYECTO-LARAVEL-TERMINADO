@@ -39,7 +39,7 @@
                     @elseif (auth()->guard('estudiante')->check())
                         <li><a class="dropdown-item" href="{{ route('estudiantes.logout') }}">Logout</a></li>
                     @else
-                        <li><a class="dropdown-item" href="{{ route('docentes.showLoginForm') }}">Iniciar sesión</a></li>
+                        <li><a class="dropdown-item" href="{{ route('docentes.showLoginForm') }}">Iniciar sesión como docente</a></li>
                         <li><a class="dropdown-item" href="{{ route('estudiantes.showLoginForm') }}">Iniciar sesión como estudiante</a></li>
                     @endif
                 </ul>
@@ -69,6 +69,20 @@
                             <a class="nav-link" href="{{ route('estudiantes.index') }}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Estudiante
+                            </a>
+                            <a class="nav-link" href="{{ route('estudiantes_grupos.index') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Estudiantes Grupos
+                            </a>
+                            <a class="nav-link" href="{{ route('asistencias.index') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Asistencias
+                            </a>
+                            @elseif (auth()->guard('estudiante')->check())
+                            <div class="sb-sidenav-menu-heading">Sección Estudiantes</div>
+                            <a class="nav-link" href="{{ route('asistencias.index') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Asistencias
                             </a>
                         @endif
                     </div>

@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class EstudianteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $query = Estudiante::query();
@@ -28,28 +25,27 @@ class EstudianteController extends Controller
         return view('estudiantes.index', compact('estudiantes'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('estudiantes.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $request->merge(['pin' => Hash::make($request->pin)]);
-        $estudiante = Estudiante::create($request->all());
-        return redirect()->route('estudiantes.index')->with('success', 'Estudianate registrado correctamente.');
+        $validatedData = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'email' => 'required|email|unique:estudiantes,email',
+            'pin' => 'required|numeric|digits_between:4,6',
+        ]);
+
+        $validatedData['pin'] = Hash::make($validatedData['pin']);
+        Estudiante::create($validatedData);
+
+        return redirect()->route('estudiantes.index')->with('success', 'Estudiante registrado correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show( $id)
+    public function show($id)
     {
         $estudiante = Estudiante::find($id);
 
@@ -60,10 +56,7 @@ class EstudianteController extends Controller
         return view('estudiantes.show', compact('estudiante'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit( $id)
+    public function edit($id)
     {
         $estudiante = Estudiante::find($id);
 
@@ -73,10 +66,7 @@ class EstudianteController extends Controller
         return view('estudiantes.edit', compact('estudiante'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request,  $id)
+    public function update(Request $request, $id)
     {
         $estudiante = Estudiante::find($id);
 
@@ -84,15 +74,20 @@ class EstudianteController extends Controller
             return abort(404);
         }
 
-        $estudiante->nombre = $request->nombre;
-        $estudiante->apellido = $request->apellido;
-        $estudiante->email = $request->email;
+        $validatedData = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'email' => 'required|email|unique:estudiantes,email,' . $estudiante->id,
+        ]);
 
-        $estudiante->save();
+        if ($request->filled('pin')) {
+            $validatedData['pin'] = Hash::make($request->pin);
+        }
+
+        $estudiante->update($validatedData);
 
         return redirect()->route('estudiantes.index')->with('success', 'Estudiante actualizado correctamente.');
     }
-
 
     public function delete($id)
     {
@@ -104,10 +99,7 @@ class EstudianteController extends Controller
         return view('estudiantes.delete', compact('estudiante'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy( $id)
+    public function destroy($id)
     {
         $estudiante = Estudiante::find($id);
 
@@ -124,19 +116,30 @@ class EstudianteController extends Controller
     {
         return view('estudiantes.login');
     }
-
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'pin');
-
-        if (Auth::guard('estudiante')->attempt($credentials)) {
-            return redirect()->intended();
-        }
-
-        return redirect()->back()->withErrors([
-            'InvalidCredentials' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+        $request->validate([
+            'email' =>'required|email',
+            'pin' => 'required'
         ]);
+
+        // Buscar al estudiante por correo electrónico
+        $estudiante = Estudiante::where('email', $request['email'])->first();
+
+        // Verificar si el estudiante existe y la contraseña es válida
+        if ($estudiante && Hash::check($request['pin'], $estudiante->pin)) {
+            Auth::guard('estudiante')->login($estudiante);
+            return redirect()->route('estudiantes.index'); // Redirigir a la lista de estudiantes
+        } else {
+            // Mostrar mensaje de error si las credenciales no coinciden
+            return redirect()->back()->withErrors([
+                'InvalidCredentials' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+            ]);
+        }
     }
+
+
+
 
     public function logout()
     {

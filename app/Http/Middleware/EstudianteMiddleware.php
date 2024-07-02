@@ -20,7 +20,7 @@ class EstudianteMiddleware
             # code...
             return $next($request);
         }
-        if (!Auth::guard('estudiantes')->check()) {
+        if (!Auth::guard('estudiante')->check()) {
             return redirect()->route('estudiantes.showLoginForm');
         }
         return $next($request);
